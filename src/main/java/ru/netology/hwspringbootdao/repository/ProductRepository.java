@@ -1,7 +1,6 @@
-package ru.netology.hwspringbootdao;
+package ru.netology.hwspringbootdao.repository;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,24 +9,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
 public class ProductRepository {
 
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
+    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final String productScriptQuery;
 
-    public ProductRepository() {
+    public ProductRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.productScriptQuery = read();
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public String getProductName(String name) {
+    public List<String> getProductNames(String name) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", name);
-        return jdbcTemplate.queryForObject(productScriptQuery, params, String.class);
+        return jdbcTemplate.queryForList(productScriptQuery, params, String.class);
     }
 
     private static String read() {
